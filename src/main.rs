@@ -10,6 +10,7 @@ use sdl2::rect::Point;
 use std::collections::HashSet;
 use std::time::Duration;
 
+#[derive(Debug)]
 struct Bounds {
     x1: f32,
     y1: f32,
@@ -38,8 +39,8 @@ impl Bounds {
 
     pub fn update(&mut self, x: f32, y: f32) {
         self.x1 = self.x1.min(x);
-        self.y1 = self.y1.min(x);
-        self.x2 = self.x2.max(y);
+        self.y1 = self.y1.min(y);
+        self.x2 = self.x2.max(x);
         self.y2 = self.y2.max(y);
     }
 
@@ -53,9 +54,8 @@ impl Bounds {
     fn map(&self, value: f32, start1: f32, stop1: f32, start2: f32, stop2: f32) -> f32 {
         let size1 = stop1 - start1;
         let size2 = stop2 - start2;
-        let position = (start1 - value).abs();
-        let pct = position / size1;
-        size2 * pct
+        let position = (start1 - value).abs() / size1;
+        size2 * position
     }
 }
 
@@ -140,7 +140,8 @@ pub fn main() {
     canvas.clear();
     canvas.present();
 
-    let ifs = BarnsleyIFS::maple_leaf();
+    let ifs = BarnsleyIFS::fern();
+    //    let ifs = BarnsleyIFS::maple_leaf();
     let size = canvas.output_size().unwrap();
     let screen_bounds = Bounds::from_dimensions(size.0 as f32, size.1 as f32);
     let mut x = 0.0;
@@ -162,6 +163,7 @@ pub fn main() {
         // update bounds
         bounds.update(pos_x, pos_y);
     }
+    println!("computed bounds: {:?}", bounds);
 
     let mut projected_points = HashSet::new();
     for p in &computed_points {
