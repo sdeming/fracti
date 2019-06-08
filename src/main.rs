@@ -150,7 +150,7 @@ pub fn main() {
     // generate image
     let mut computed_points = HashSet::new();
     let mut bounds = Bounds::new();
-    for _n in 1..100_000 {
+    for _n in 1..1_000_000 {
         let next = ifs.next(x, y, rng.gen());
         x = next.0;
         y = next.1;
@@ -164,6 +164,7 @@ pub fn main() {
         bounds.update(pos_x, pos_y);
     }
     println!("computed bounds: {:?}", bounds);
+    println!("computed points: {}", computed_points.iter().count());
 
     let mut projected_points = HashSet::new();
     for p in &computed_points {
