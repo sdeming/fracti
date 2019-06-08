@@ -1,0 +1,12 @@
+[package]
+name = "fracti"
+version = "0.1.0"
+authors = ["Scott Deming <sdeming@makefile.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sdl2 = "0.32"
+rand = "0.6"
+
