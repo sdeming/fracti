@@ -101,6 +101,16 @@ impl BarnsleyIFS {
         BarnsleyIFS::new(c, p)
     }
 
+    fn sierpenski() -> BarnsleyIFS {
+        let c = vec![
+            vec![0.5, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0],
+            vec![0.5, 0.0, 0.0, 0.5, 0.25, 0.5 * 3.0f32.sqrt() / 2.0],
+            vec![0.5, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0],
+        ];
+        let p = vec![0.33, 0.34, 0.33];
+        BarnsleyIFS::new(c, p)
+    }
+
     fn next(&self, x: f32, y: f32, rnd: f32) -> (f32, f32) {
         let mut slot = 0;
         for p in &self.probabilities {
@@ -109,7 +119,7 @@ impl BarnsleyIFS {
             }
         }
 
-        if let Some(t) = &self.coefficients.get(slot) {
+        if let Some(t) = self.coefficients.get(slot) {
             let new_x = t[0] * x + t[1] * y + t[4];
             let new_y = t[2] * x + t[3] * y + t[5];
             return (new_x, new_y);
