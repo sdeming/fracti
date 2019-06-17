@@ -152,35 +152,15 @@ pub fn main() {
 
     let ifs = BarnsleyIFS::fern();
     //    let ifs = BarnsleyIFS::maple_leaf();
+    //    let ifs = BarnsleyIFS::sierpenski();
     let size = canvas.output_size().unwrap();
     let screen_bounds = Bounds::from_dimensions(size.0 as f32, size.1 as f32);
     let mut x = 0.0;
     let mut y = 0.0;
 
     // generate image
-    let mut computed_points = HashSet::new();
+    let mut computed_points = Vec::<(i32, i32)>::new();
     let mut bounds = Bounds::new();
-    for _n in 1..1_000_000 {
-        let next = ifs.next(x, y, rng.gen());
-        x = next.0;
-        y = next.1;
-
-        // project onto 1000 times field
-        let pos_x = x * 1000.0;
-        let pos_y = y * 1000.0;
-        computed_points.insert((pos_x as i32, pos_y as i32));
-
-        // update bounds
-        bounds.update(pos_x, pos_y);
-    }
-    println!("computed bounds: {:?}", bounds);
-    println!("computed points: {}", computed_points.iter().count());
-
-    let mut projected_points = HashSet::new();
-    for p in &computed_points {
-        projected_points
-            .insert(bounds.project(p.0 as f32, p.1 as f32, &screen_bounds) as (i32, i32));
-    }
 
     let mut event_pump = sdl_context.event_pump().unwrap();
     'running: loop {
@@ -188,8 +168,25 @@ pub fn main() {
         canvas.clear();
         canvas.set_draw_color(pxcolor);
 
-        for p in &projected_points {
-            let result = canvas.draw_point(Point::new(p.0 as i32, p.1 as i32));
+        if computed_points.len() < 1_000_000 {
+            for _ in 1..10_000 {
+                let next = ifs.next(x, y, rng.gen());
+                x = next.0;
+                y = next.1;
+
+                // project onto 1000 times field
+                let pos_x = x * 1000.0;
+                let pos_y = y * 1000.0;
+                computed_points.push((pos_x as i32, pos_y as i32));
+
+                // update bounds
+                bounds.update(pos_x, pos_y);
+            }
+        }
+
+        for p in &computed_points {
+            let projected_point = bounds.project(p.0 as f32, p.1 as f32, &screen_bounds);
+            let result = canvas.draw_point(Point::new(projected_point.0, projected_point.1));
             match result {
                 Ok(_) => (),
                 Err(_err) => (),
